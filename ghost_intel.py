@@ -27,12 +27,12 @@ async def check_site(session, site_name, url_template, username):
 
 async def scan_username(username):
     platforms = {
-        "GitHub": "https://github.com{}",
+        "GitHub": "https://github.com/{}",
         "Instagram": "https://instagram.com{}",
         "TikTok": "https://tiktok.com@{}",
         "Pinterest": "https://pinterest.com{}",
         "Twitter-X": "https://x.com{}",
-        "YouTube": "https://youtube.com@{}"
+        "YouTube": "https://youtube.com/@{}"
     }
     
     print(f"\n[\033[94m*\033[0m] Recherche globale pour : {username}...\n")
@@ -81,4 +81,3 @@ def main_menu():
 
 if __name__ == "__main__":
     main_menu()
-
