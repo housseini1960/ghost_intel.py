@@ -8,7 +8,7 @@ Un outil multi-fonctions en Python pour l'OSINT et le tracking.
 
 ## Installation dans Termux
 ```bash
-git clone https://github.com
+git clone https://github.com/housseini1960/ghsot_intel.py.git
 cd ghost_intel.py
 pip install aiohttp
 python ghost_intel.py
