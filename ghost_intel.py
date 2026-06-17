@@ -11,7 +11,7 @@ def clear_screen():
 async def check_site(session, site_name, url_template, username):
     url = url_template.format(username)
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
     try:
         timeout = aiohttp.ClientTimeout(total=8)
@@ -23,16 +23,16 @@ async def check_site(session, site_name, url_template, username):
             else:
                 print(f"[\033[93m?\033[0m] {site_name}: Code {response.status}")
     except Exception:
-        print(f"[\033[91m!\033[0m] {site_name}: Erreur")
+        print(f"[\033[91m!\033[0m] {site_name}: Erreur de connexion")
 
 async def scan_username(username):
     platforms = {
-        "GitHub": "https://github.com/{}",
+        "GitHub": "https://github.com{}",
         "Instagram": "https://instagram.com{}",
         "TikTok": "https://tiktok.com@{}",
         "Pinterest": "https://pinterest.com{}",
         "Twitter-X": "https://x.com{}",
-        "YouTube": "https://youtube.com/@{}"
+        "YouTube": "https://youtube.com@{}"
     }
     
     print(f"\n[\033[94m*\033[0m] Recherche globale pour : {username}...\n")
@@ -41,7 +41,37 @@ async def scan_username(username):
         await asyncio.gather(*tasks)
     input("\nAppuyez sur Entrée pour revenir au menu...")
 
-# 2. MENU PRINCIPAL
+# 2. TRACKER D'ADRESSE IP (Nouveau outil fonctionnel)
+async def track_ip():
+    print(f"\n[\033[94m*\033[0m] Initialisation du Tracker IP...")
+    target_ip = input("Entrez l'adresse IP à tracker (ou Entrée pour votre propre IP) : ").strip()
+    
+    url = f"http://ip-api.com{target_ip}"
+    
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=10) as response:
+                res = await response.json()
+                
+                if res.get("status") == "success":
+                    print(f"\n\033[92m[+] Informations récoltées pour l'IP {res.get('query')} :\033[0m")
+                    print(f"[-] Pays         : {res.get('country')} ({res.get('countryCode')})")
+                    print(f"[-] Région       : {res.get('regionName')}")
+                    print(f"[-] Ville        : {res.get('city')}")
+                    print(f"[-] Code Postal  : {res.get('zip')}")
+                    print(f"[-] Opérateur    : {res.get('isp')}")
+                    print(f"[-] Organisation : {res.get('org')}")
+                    print(f"[-] Latitude     : {res.get('lat')}")
+                    print(f"[-] Longitude    : {res.get('lon')}")
+                    print(f"[-] Fuseau Hor.  : {res.get('timezone')}")
+                else:
+                    print(f"[\033[91m!\033[0m] Impossible de récupérer les infos : {res.get('message')}")
+    except Exception as e:
+        print(f"[\033[91m!\033[0m] Erreur lors de la requête : {e}")
+        
+    input("\nAppuyez sur Entrée pour revenir au menu principal...")
+
+# 3. MENU PRINCIPAL
 def main_menu():
     while True:
         clear_screen()
@@ -53,10 +83,10 @@ def main_menu():
  \______  /__|_  /\____/____  > |__|    |___|___|  /__|   
         \/     \/           \/                   \/      \033[0m
 ==========================================================
-        \033[94m=== GHOST INTEL PRO - MULTI-TOOL ===\033[0m
+        \033[94m=== GHOST INTEL PRO - MULTI-TOOL v2 ===\033[0m
 ==========================================================
 1. Scanner un pseudonyme (Ultra-Fast OSINT)
-2. Tracker une adresse IP (À venir)
+2. Tracker une adresse IP (Géolocalisation)
 3. Analyser un numéro (À venir)
 4. Quitter le script
 ==========================================================
@@ -68,8 +98,7 @@ def main_menu():
             if pseudo:
                 asyncio.run(scan_username(pseudo))
         elif choix == "2":
-            print("\nOption IP bientôt prête...")
-            input("\nAppuyez sur Entrée...")
+            asyncio.run(track_ip())
         elif choix == "3":
             print("\nOption Téléphone bientôt prête...")
             input("\nAppuyez sur Entrée...")
