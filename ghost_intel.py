@@ -87,7 +87,7 @@ def main_menu():
 ==========================================================
 1. Scanner un pseudonyme (Ultra-Fast OSINT)
 2. Tracker une adresse IP (Géolocalisation)
-3. Analyser un numéro (À venir)
+3. Analyser un numéro (Détails GSM)
 4. Quitter le script
 ==========================================================
         """)
@@ -100,8 +100,8 @@ def main_menu():
         elif choix == "2":
             asyncio.run(track_ip())
         elif choix == "3":
-            print("\nOption Téléphone bientôt prête...")
-            input("\nAppuyez sur Entrée...")
+                        track_phone()
+
         elif choix == "4":
             print("\n\033[93mFermeture. Au revoir !\033[0m")
             sys.exit()
