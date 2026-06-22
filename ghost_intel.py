@@ -46,7 +46,7 @@ async def track_ip():
     print(f"\n[\033[94m*\033[0m] Initialisation du Tracker IP...")
     target_ip = input("Entrez l'adresse IP à tracker (ou Entrée pour votre propre IP) : ").strip()
     
-    url = f"http://ip-api.com{target_ip}"
+    url = f"http://ip-api.com/json/{target_ip}"
     
     try:
         async with aiohttp.ClientSession() as session:
