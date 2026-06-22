@@ -7,26 +7,8 @@ import aiohttp
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-# # 1. SCANNER DE PSEUDONYME ULTRA-RAPIDE
-async def check_site(session, site_name, url_template, username):
-    url = url_template.format(username)
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7"
-    }
-    try:
-        timeout = aiohttp.ClientTimeout(total=20)
-        async with session.get(url, headers=headers, timeout=timeout, ssl=False) as response:
-            if response.status == 200:
-                print(f"[\033[92m+\033[0m] {site_name}: {url}")
-            elif response.status == 404:
-                print(f"[\033[91m-\033[0m] {site_name}: Introuvable")
-            else:
-                print(f"[\033[93m?\033[0m] {site_name}: Code {response.status}")
-    except Exception:
-        print(f"[\033[91m!\033[0m] {site_name}: Erreur de connexion")
-
-async def scan_username(username):
+# 1. SCANNER DE PSEUDONYME ULTRA-STABLE
+def scan_username(username):
     platforms = {
         "GitHub": "https://github.com{}",
         "Instagram": "https://instagram.com{}",
@@ -36,11 +18,26 @@ async def scan_username(username):
         "YouTube": "https://youtube.com@{}"
     }
     
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    
     print(f"\n[\033[94m*\033[0m] Recherche globale pour : {username}...\n")
-    connector = aiohttp.TCPConnector(ssl=False)
-    async with aiohttp.ClientSession(connector=connector) as session:
-        tasks = [check_site(session, name, template, username) for name, template in platforms.items()]
-        await asyncio.gather(*tasks)
+    import requests
+    
+    for site_name, url_template in platforms.items():
+        url = url_template.format(username)
+        try:
+            response = requests.get(url, headers=headers, timeout=5)
+            if response.status_code == 200:
+                print(f"[\033[92m+\033[0m] {site_name}: {url}")
+            elif response.status_code == 404:
+                print(f"[\033[91m-\033[0m] {site_name}: Introuvable")
+            else:
+                print(f"[\033[93m?\033[0m] {site_name}: Code {response.status_code}")
+        except Exception:
+            print(f"[\033[91m!\033[0m] {site_name}: Erreur de connexion")
+            
     input("\nAppuyez sur Entrée pour revenir au menu...")
 
 # 2. ANALYSEUR DE NUMÉRO DE TÉLÉPHONE
@@ -136,9 +133,9 @@ def main_menu():
         if choix == "1":
             pseudo = input("\nEntrez le pseudonyme à rechercher : ").strip()
             if pseudo:
-                asyncio.run(scan_username(pseudo))
+                scan_username(pseudo)
         elif choix == "2":
-            asyncio.run(track_ip())
+            track_ip()
         elif choix == "3":
             track_phone()
         elif choix == "4":
