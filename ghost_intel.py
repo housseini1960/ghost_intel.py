@@ -41,13 +41,51 @@ async def scan_username(username):
         await asyncio.gather(*tasks)
     input("\nAppuyez sur Entrée pour revenir au menu...")
 
-# 2. TRACKER D'ADRESSE IP (Nouveau outil fonctionnel)
+# 2. ANALYSEUR DE NUMÉRO DE TÉLÉPHONE
+def track_phone():
+    print(f"\n[\033[94m*\033[0m] Initialisation de l'analyseur de numéro...")
+    numero_saisi = input("Entrez le numéro avec l'indicatif (ex: +33612345678) : ").strip()
+    
+    if not numero_saisi.startswith("+"):
+        print("[\033[91m!\033[0m] Erreur : N'oubliez pas le '+' et l'indicatif pays !")
+        input("\nAppuyez sur Entrée pour continuer...")
+        return
+
+    try:
+        import phonenumbers
+        from phonenumbers import geocoder, carrier, timezone
+        
+        parsed_number = phonenumbers.parse(numero_saisi, None)
+        
+        if phonenumbers.is_valid_number(parsed_number):
+            print(f"\n\033[92m[+] Analyse réussie pour le numéro {numero_saisi} :\033[0m")
+            
+            pays = geocoder.description_for_number(parsed_number, "fr")
+            operateur = carrier.name_for_number(parsed_number, "fr")
+            fuseaux = timezone.time_zones_for_number(parsed_number)
+            
+            print(f"[-] Pays d'origine : {pays if pays else 'Inconnu'}")
+            print(f"[-] Opérateur GSM  : {operateur if operateur else 'Inconnu / Fixe'}")
+            print(f"[-] Fuseau Horaire : {', '.join(fuseaux)}")
+            print(f"[-] Format National: {phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.NATIONAL)}")
+        else:
+            print("[\033[91m!\033[0m] Ce numéro semble invalide ou mal structuré.")
+            
+    except Exception as e:
+        print(f"[\033[91m!\033[0m] Erreur lors de l'analyse : {e}")
+        
+    input("\nAppuyez sur Entrée pour revenir au menu principal...")
+
+# 3. TRACKER D'ADRESSE IP
 async def track_ip():
     print(f"\n[\033[94m*\033[0m] Initialisation du Tracker IP...")
     target_ip = input("Entrez l'adresse IP à tracker (ou Entrée pour votre propre IP) : ").strip()
     
-    url = f"http://ip-api.com/json/{target_ip}"
-    
+    if target_ip == "":
+        url = "http://ip-api.com/json/"
+    else:
+        url = f"http://ip-api.com/json/{target_ip}"
+        
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, timeout=10) as response:
@@ -71,7 +109,7 @@ async def track_ip():
         
     input("\nAppuyez sur Entrée pour revenir au menu principal...")
 
-# 3. MENU PRINCIPAL
+# 4. MENU PRINCIPAL
 def main_menu():
     while True:
         clear_screen()
@@ -100,8 +138,7 @@ def main_menu():
         elif choix == "2":
             asyncio.run(track_ip())
         elif choix == "3":
-                        track_phone()
-
+            track_phone()
         elif choix == "4":
             print("\n\033[93mFermeture. Au revoir !\033[0m")
             sys.exit()
@@ -110,3 +147,4 @@ def main_menu():
 
 if __name__ == "__main__":
     main_menu()
+
