@@ -36,8 +36,10 @@ async def scan_username(username):
         "YouTube": "https://youtube.com@{}"
     }
     
-    print(f"\n[\033[94m*\033[0m] Recherche globale pour : {username}...\n")
-    async with aiohttp.ClientSession() as session:
+        print(f"\n[\033[94m*\033[0m] Recherche globale pour : {username}...\n")
+        connector = aiohttp.TCPConnector(ssl=False)
+        async with aiohttp.ClientSession(connector=connector) as session:
+
         tasks = [check_site(session, name, template, username) for name, template in platforms.items()]
         await asyncio.gather(*tasks)
     input("\nAppuyez sur Entrée pour revenir au menu...")
